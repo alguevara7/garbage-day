@@ -1,0 +1,10 @@
+*jar
+/qqlib/
+/classes/
+.lein-failures
+.lein-deps-sum
+*~
+.#*
+page.html
+*temp*
+.DS*

@@ -1,0 +1,26 @@
+- attribution to city of toronto in api and app
+- come up with very simple api (returns Monday, Tuesday)
+- future version, think of internationalization
+- api is get based (longitude, latitude)
+- http://toronto.garbage-day.com/api/v0.1?longitude=-74&latitude=10
+- response: Monday
+- response: cache for a Month!
+- internal beta: for friends, it only supports toronto
+- vancouver
+- montreal
+- future versions: major canadian cities
+- new york
+- major us cities (when possible)
+- version 0.1, just print out the day
+- version 0.2, center the map, show the day as an overlay
+- version x, add multiple layers (mmm no!, people won't be able to find the app)
+- version x, maybe it could show other points of interest in the map
+
+
+LIBRARIES
+---------
+- http://docs.geotools.org/latest/userguide/library/data/shape.html
+
+THOUGHTS
+--------
+- when say sending a tweet to instapaper, your u-shadow knows where the instapaper item came from. So, marking something as favourite in instataper should also mark it fovourite in twitter.
