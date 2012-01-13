@@ -7,8 +7,9 @@
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json"}
-      :body (json/generate-string data)})
+   :body (json/generate-string data)})
 
 (defroutes routes
-  (GET "/api/0.1/lg=:longitude&lt=:latitude" [longitude latitude] (json-response (model/garbage-day latitude longitude)))
-  )
+  (GET ["/api/1.0/lg=:longitude&lt=:latitude", :longitude #"\-{0,1}\d+\.\d+", :latitude #"\-{0,1}\d+\.\d+"]
+       [longitude latitude]
+       (json-response (model/garbage-day longitude latitude))))

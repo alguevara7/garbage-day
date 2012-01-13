@@ -4,24 +4,17 @@
                      ;; allow for local server to be started
                      ;; using lein ring server (don't need to
                      ;; restart on change)
-                     [lein-ring "0.4.5"]]
+                     [lein-ring "0.5.4"]]
   :dependencies [
-                 [org.clojure/clojure "1.2.1"]
+                 [org.clojure/clojure "1.3.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [clj-stacktrace "0.2.4"]
-                 [compojure "0.6.5"]
-                 [ring/ring-core "0.3.8"]
-                 [ring/ring-jetty-adapter "0.3.8"]
+                 [compojure "1.0.1"]
+                 [ring/ring-core "1.0.1"]
+                 [ring/ring-jetty-adapter "1.0.1"]
                  [ring-json-params "0.1.3"]
-                 [cheshire "2.0.4"]]
+                 [cheshire "2.0.4"]
+                 [org.geotools/gt2-indexed-shapefile "2.3.5"]]
 
-    :ring {:handler garbageday.core/run-server})
-
-
-
-;[org.clojure/clojure "1.3.0"]
-;[ring/ring-jetty-adapter "1.0.0-RC1"]
-;[compojure "1.0.1"]
-;
-;
-;
+  :ring {:handler garbageday.core/run-server}
+  :repositories {"releases" "http://download.osgeo.org/webdav/geotools/"})
