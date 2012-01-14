@@ -12,8 +12,9 @@
         day-areas-source (.getFeatureSource data-store day-areas-type)
         filter (CQL/toFilter (str "CONTAINS (the_geom,POINT(" longitude " " latitude "))"))
         feature (first (.getFeatures day-areas-source filter))
-        day-of-week (.getAttribute feature "Schedule")
-        ]
+        day-of-week (if-not (nil? feature)
+                      (.getAttribute feature "Schedule")
+                      "Unknown")]
     (str day-of-week)))
 
 (defn garbage-day [longitude latitude]
