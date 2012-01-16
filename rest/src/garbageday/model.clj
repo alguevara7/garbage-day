@@ -17,7 +17,4 @@
                       "Unknown")]
     (str day-of-week)))
 
-(defn garbage-day [longitude latitude]
-  {:day-of-week (query-shape-file longitude latitude)})
-
 
