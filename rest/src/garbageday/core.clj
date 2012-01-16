@@ -9,19 +9,11 @@
   garbageday.rest/routes
   (route/not-found "Page not Found!"))
 
-(def run-server (handler/api urls))
+(def application (handler/api urls))
 
 (defn start [port]
-  (ring/run-jetty (var run-server)
-                  {:port (or port 8080) :join? false}))
+  (ring/run-jetty (var application) {:port (or port 8080) :join? false}))
 
-(defn -main
-  ([] (-main 8080))
-  ([port]
-     (let [sys-port (System/getenv "PORT")]
-       (if (nil? sys-port)
-         (start (cond
-                 (string? port) (Integer/parseInt port)
-                 :else port))
-         (start (Integer/parseInt sys-port))))))
-
+(defn -main []
+  (let [port (Integer/parseInt (System/getenv "PORT"))]
+    (start port)))
