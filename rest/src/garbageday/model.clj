@@ -5,7 +5,8 @@
            (org.geotools.data DataStoreFinder)
            (org.geotools.filter.text.cql2 CQL)))
 
-(defn query-shape-file [longitude latitude]
+(defn collection-day  [longitude latitude]
+  "returns a map ..."
   (let [url (as-url (file "data/Soilid_Waste_Datime_Curbside_Collection_Areas_WGS84/Day_areas_WGS84.shp"))
         data-store (DataStoreFinder/getDataStore {"url" url})
         day-areas-type (first (.getTypeNames data-store))
@@ -17,4 +18,21 @@
                       "Unknown")]
     (str day-of-week)))
 
-
+(defn what-is-collected [day-of-week year month day-of-month]
+  (cond
+   (and (= "Tuesday 2" day-of-week) (is-tuesday day-of-month)) (cond
+                                (= month :august) (cond (even? day-of-month) [:green-bin :recycling]
+                                                        :else [:green-bin :garbage :yard-waste])
+                                (= month :september) (cond (odd? day-of-month) [:green-bin :recycling]
+                                                           :else [:green-bin :garbage :yard-waste])
+                                (= month :october) (cond (odd? day-of-month) [:green-bin :recycling]
+                                                         :else [:green-bin :garbage :yard-waste])
+                                (= month :november) (cond (even? day-of-month) [:green-bin :recycling]
+                                                          :else [:green-bin :garbage :yard-waste])
+                                (= month :december) (cond (even? day-of-month) [:green-bin :recycling]
+                                                          :else [:green-bin :garbage :yard-waste])
+                                (= month :january) (cond (odd? day-of-month) [:green-bin :recycling]
+                                                         :else [:green-bin :garbage :christmas-tree])
+                                
+                                :else []) 
+   :else []))

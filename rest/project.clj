@@ -15,7 +15,8 @@
                  [ring-json-params "0.1.3"]
                  [cheshire "2.0.4"]
                  [org.geotools/gt2-shapefile "2.4.5"]
-                 [org.geotools/gt2-cql "2.4.5"]]
+                 [org.geotools/gt2-cql "2.4.5"]
+                 [clj-time "0.3.4"]]
 
   :ring {:handler garbageday.core/run-server}
   :repositories {"releases" "http://download.osgeo.org/webdav/geotools/"})
