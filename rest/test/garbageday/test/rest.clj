@@ -12,19 +12,19 @@
   (is (nil? (request "/api/1.0/lg=1.1&lt=22" routes)) "latitude missing decimal")
   (is (nil? (request "/other/1.0/lg=1.1&lt=2.2" routes)) "api suffix missing")
   (is (nil? (request "/api/x.x/lg=1.1&lt=2.2" routes)) "version missing")
-  (with-redefs [garbageday.model/query-shape-file #(if (= [%1 %2] ["1.1" "2.2"]) "Monday")]
+  (with-redefs [garbageday.model/collection-day #(if (= [%1 %2] ["1.1" "2.2"]) "Monday")]
     (is (= 200 (:status (request "/api/1.0/lg=1.1&lt=2.2" routes)))
         "status 200 for properly formed request, with positive longitude and latitude"))
-  (with-redefs [garbageday.model/query-shape-file #(if (= [%1 %2] ["-1.1" "-2.2"]) "Monday")]
+  (with-redefs [garbageday.model/collection-day #(if (= [%1 %2] ["-1.1" "-2.2"]) "Monday")]
     (is (= 200 (:status (request "/api/1.0/lg=-1.1&lt=-2.2" routes)))
         "status 200 for properly formed request, with negative longitude and latitude"))
   )
 
 (deftest test-response-encoding
-  (with-redefs [garbageday.model/query-shape-file #(if (= [%1 %2] ["1.1" "2.2"]) "Monday")]
+  (with-redefs [garbageday.model/collection-day #(if (= [%1 %2] ["1.1" "2.2"]) "Monday")]
     (is (= "{\"day-of-week\":\"Monday\"}" (:body (request "/api/1.0/lg=1.1&lt=2.2" routes)))
         "correct body for properly formed request, with positive longitude and latitude"))
-  (with-redefs [garbageday.model/query-shape-file #(if (= [%1 %2] ["-1.1" "-2.2"]) "Monday")]
+  (with-redefs [garbageday.model/collection-day #(if (= [%1 %2] ["-1.1" "-2.2"]) "Monday")]
     (is (= "{\"day-of-week\":\"Monday\"}" (:body (request "/api/1.0/lg=-1.1&lt=-2.2" routes)))
         "correct body for properly formed request, with negative longitude and latitude"))
   )
