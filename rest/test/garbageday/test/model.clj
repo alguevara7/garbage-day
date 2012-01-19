@@ -7,5 +7,5 @@
   (is (= "Unknown" (collection-day "0.0" "0.0")) "coordicate not in shape file"))
 
 (deftest test-what-is-collected
-  (is (= [] (what-is-collected 2010 "Tuesday 2" :august 1)))
-  (is (= [:green-bin :recycling] (what-is-collected "Tuesday 2" :august 2))))
+  (is (= [] (what-is-collected "Tuesday 2" 2001 :august 1)))
+  (is (= [:green-bin :recycling] (what-is-collected "Tuesday 2" 2001 :august 2))))

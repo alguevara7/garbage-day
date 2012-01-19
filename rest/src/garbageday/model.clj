@@ -18,9 +18,15 @@
                       "Unknown")]
     (str day-of-week)))
 
+(defn is-tuesday [year month day-of-month]
+  (cond
+   (= 2 day-of-month) :true
+   :else nil))
+
+;other api function next garbage day!
 (defn what-is-collected [day-of-week year month day-of-month]
   (cond
-   (and (= "Tuesday 2" day-of-week) (is-tuesday day-of-month)) (cond
+   (and (= "Tuesday 2" day-of-week) (is-tuesday year month day-of-month)) (cond
                                 (= month :august) (cond (even? day-of-month) [:green-bin :recycling]
                                                         :else [:green-bin :garbage :yard-waste])
                                 (= month :september) (cond (odd? day-of-month) [:green-bin :recycling]
@@ -37,3 +43,4 @@
                                 
                                 :else []) 
    :else []))
+
