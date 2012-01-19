@@ -31,7 +31,7 @@
                                                           :else [:green-bin :garbage :yard-waste])
                                 (= month :december) (cond (even? day-of-month) [:green-bin :recycling]
                                                           (= day-of-month 13) [:green-bin :garbage :yard-waste]
-                                                          :else [:green-bin :garbage])
+                                                          :else [:green-bin :garbage :garbage])
                                 (= month :january) (cond (odd? day-of-month) [:green-bin :recycling]
                                                          :else [:green-bin :garbage :christmas-tree])
                                 
