@@ -1,6 +1,7 @@
 (ns garbageday.model
   (:use clojure.contrib.java-utils)
   (:use [clojure.contrib.string :only [join]])
+  (:require [clj-time.core :as dt])
   (:import (java.util Date Timer Random)
            (org.geotools.data DataStoreFinder)
            (org.geotools.filter.text.cql2 CQL)))
@@ -14,14 +15,13 @@
         filter (CQL/toFilter (str "CONTAINS (the_geom,POINT(" longitude " " latitude "))"))
         feature (first (.getFeatures day-areas-source filter))
         day-of-week (if-not (nil? feature)
+
                       (.getAttribute feature "Schedule")
                       "Unknown")]
     (str day-of-week)))
 
 (defn is-tuesday [year month day-of-month]
-  (cond
-   (= 2 day-of-month) :true
-   :else nil))
+  (= 2 (dt/day-of-week (dt/date-time year month day-of-month))))
 
 ;other api function next garbage day!
 (defn what-is-collected [day-of-week year month day-of-month]
@@ -37,10 +37,13 @@
                                                           :else [:green-bin :garbage :yard-waste])
                                 (= month :december) (cond (even? day-of-month) [:green-bin :recycling]
                                                           (= day-of-month 13) [:green-bin :garbage :yard-waste]
-                                                          :else [:green-bin :garbage :garbage])
+                                                          :else [:green-bin :garbage])
                                 (= month :january) (cond (odd? day-of-month) [:green-bin :recycling]
+                                                         :else [:green-bin :garbage :christmas-tree])
+                                (= month :february) (cond (odd? day-of-month) [:green-bin :recycling]
                                                          :else [:green-bin :garbage :christmas-tree])
                                 
                                 :else []) 
    :else []))
+
 
