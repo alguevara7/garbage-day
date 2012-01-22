@@ -26,16 +26,16 @@
 (defn week-relative-to-august-1st [year month day]
   (+ 1 (dt/in-weeks (dt/interval (dt/date-time 2011 8 1)  (dt/date-time year month day)) )))
 
-(defn is-garbage-collection [week]
+(defn- is-garbage-collection [week]
   (if (even? week) :garbage))
 
-(defn is-recycling-collection [week]
+(defn- is-recycling-collection [week]
   (if (odd? week) :recycling))
 
-(defn is-yard-waste-collection [week]
-  (if (and (even? week) (not (some #{week} (range 21 34)))) :yard-waste))
+(defn- is-yard-waste-collection [week]
+  (if (and (even? week) (not (some #{week} (range 21 34 )))) :yard-waste))
 
-(defn is-christmas-tree-collection [week]
+(defn- is-christmas-tree-collection [week]
   (if (some #{week} [24 26]) :christmas-tree))
 
 ;other api function next garbage day!
@@ -52,5 +52,6 @@
    
    :else []))
 
-
+(defn as-day-of-week [schedule]
+  (re-find #"[a-zA-Z]*" schedule))
 

@@ -12,19 +12,22 @@
   (is (nil? (request "/api/1.0/lg=1.1&lt=22" routes)) "latitude missing decimal")
   (is (nil? (request "/other/1.0/lg=1.1&lt=2.2" routes)) "api suffix missing")
   (is (nil? (request "/api/x.x/lg=1.1&lt=2.2" routes)) "version missing")
-  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["1.1" "2.2"]) "Monday")]
-    (is (= 200 (:status (request "/api/1.0/lg=1.1&lt=2.2" routes)))
+  (is (nil? (request "/api/1.0/lg=1.1&lt=2.2&y=a&m=1&d=1" routes)) "invalid year")
+  (is (nil? (request "/api/1.0/lg=1.1&lt=2.2&y=2001&m=a&d=1" routes)) "invalid month")
+  (is (nil? (request "/api/1.0/lg=1.1&lt=2.2&y=2001&m=1&d=a" routes)) "invalid day")
+  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["1.1" "2.2"]) "Tuesday 2")]
+    (is (= 200 (:status (request "/api/1.0/lg=1.1&lt=2.2&y=2012&m=1&d=1" routes)))
         "status 200 for properly formed request, with positive longitude and latitude"))
-  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["-1.1" "-2.2"]) "Monday")]
-    (is (= 200 (:status (request "/api/1.0/lg=-1.1&lt=-2.2" routes)))
+  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["-1.1" "-2.2"]) "Tuesday 2")]
+    (is (= 200 (:status (request "/api/1.0/lg=-1.1&lt=-2.2&y=2012&m=1&d=1" routes)))
         "status 200 for properly formed request, with negative longitude and latitude"))
   )
 
 (deftest test-response-encoding
-  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["1.1" "2.2"]) "Monday")]
-    (is (= "{\"day-of-week\":\"Monday\"}" (:body (request "/api/1.0/lg=1.1&lt=2.2" routes)))
+  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["1.1" "2.2"]) "Tuesday 2")]
+    (is (= "{\"day-of-week\":\"Tuesday\",\"what-is-collected\":[\"green-bin\",\"recycling\"]}" (:body (request "/api/1.0/lg=1.1&lt=2.2&y=2012&m=1&d=3" routes)))
         "correct body for properly formed request, with positive longitude and latitude"))
-  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["-1.1" "-2.2"]) "Monday")]
-    (is (= "{\"day-of-week\":\"Monday\"}" (:body (request "/api/1.0/lg=-1.1&lt=-2.2" routes)))
+  (with-redefs [garbageday.model/collection-schedule #(if (= [%1 %2] ["-1.1" "-2.2"]) "Tuesday 2")]
+    (is (= "{\"day-of-week\":\"Tuesday\",\"what-is-collected\":[\"green-bin\",\"recycling\"]}" (:body (request "/api/1.0/lg=-1.1&lt=-2.2&y=2012&m=1&d=3" routes)))
         "correct body for properly formed request, with negative longitude and latitude"))
   )
