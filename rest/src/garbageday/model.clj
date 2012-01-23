@@ -24,34 +24,36 @@
   (= 2 (dt/day-of-week (dt/date-time year month day))))
 
 (defn week-relative-to-august-1st [year month day]
+  "1 is returned for the first week"
   (+ 1 (dt/in-weeks (dt/interval (dt/date-time 2011 8 1)  (dt/date-time year month day)) )))
 
-(defn- is-garbage-collection [week]
-  (if (even? week) :garbage))
+(defn- is-garbage-collection [schedule week]
+  "returns :garbage if garbage is collected during week, nil otherwise"
+  (cond (some #{schedule} ["Tueday 1" "Tuesday 2"]) (if (even? week) :garbage)))
 
-(defn- is-recycling-collection [week]
-  (if (odd? week) :recycling))
+(defn- is-recycling-collection [schedule week]
+  (cond (some #{schedule} ["Tueday 1" "Tuesday 2"]) (if (odd? week) :recycling)))
 
-(defn- is-yard-waste-collection [week]
-  (if (and (even? week) (not (some #{week} (range 21 34 )))) :yard-waste))
+(defn- is-yard-waste-collection [schedule week]
+  (cond (= schedule "Tuesday 1") (if (and (odd? week) (not (some #{week} (range 20 33)))) :yard-waste)
+        (= schedule "Tuesday 2") (if (and (even? week) (not (some #{week} (range 21 34)))) :yard-waste)))
 
-(defn- is-christmas-tree-collection [week]
-  (if (some #{week} [24 26]) :christmas-tree))
+(defn- is-christmas-tree-collection [schedule week]
+  (cond (= schedule "Tuesday 1") (if (some #{week} [23 25]) :christmas-tree)
+        (= schedule "Tuesday 2") (if (some #{week} [24 26]) :christmas-tree)))
 
-;other api function next garbage day!
+(defn schedule-to-day-of-week [schedule]
+  (re-find #"[a-zA-Z]*" schedule))
 
-; generalize across years! use from august this year, or the previous year
 (defn what-is-collected [schedule year month day]
   (cond
-   (and (= "Tuesday 2" schedule) (is-tuesday year month day)) (let [week (week-relative-to-august-1st year month day)]
+   (and (= "Tuesday 2" schedule) (is-tuesday year month day))
+   (let [week (week-relative-to-august-1st year month day)]
      (remove nil? [:green-bin
-                 (is-garbage-collection week)
-                 (is-recycling-collection week)
-                 (is-yard-waste-collection week)
-                 (is-christmas-tree-collection week)]))
-   
+                   (is-garbage-collection schedule week)
+                   (is-recycling-collection schedule week)
+                   (is-yard-waste-collection schedule week)
+                   (is-christmas-tree-collection schedule week)]))
    :else []))
 
-(defn as-day-of-week [schedule]
-  (re-find #"[a-zA-Z]*" schedule))
 

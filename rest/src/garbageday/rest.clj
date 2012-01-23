@@ -18,5 +18,5 @@
         :day #"\d+"]
        [longitude latitude year month day]
        (let [schedule (model/collection-schedule longitude latitude)]
-         (json-response {:day-of-week (model/as-day-of-week schedule)
+         (json-response {:day-of-week (model/schedule-to-day-of-week schedule)
                          :what-is-collected (model/what-is-collected schedule (read-string year) (read-string month) (read-string day))}))))
