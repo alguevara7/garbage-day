@@ -20,9 +20,6 @@
                       "Unknown")]
     (str schedule)))
 
-(defn is-tuesday [year month day]
-  (= 2 (dt/day-of-week (dt/date-time year month day))))
-
 (defn week-relative-to-august-1st [year month day]
   "1 is returned for the first week"
   (+ 1 (dt/in-weeks (dt/interval (dt/date-time 2011 8 1)  (dt/date-time year month day)) )))
@@ -43,17 +40,26 @@
         (= schedule "Tuesday 2") (if (some #{week} [24 26]) :christmas-tree)))
 
 (defn schedule-to-day-of-week [schedule]
-  (re-find #"[a-zA-Z]*" schedule))
+  (let [day-of-week-prefix (re-find #"[a-zA-Z]*" schedule)]
+    (cond (= "Tuesday" day-of-week-prefix) 2
+          (= "Wednesday" day-of-week-prefix) 3
+          (= "Thursday" day-of-week-prefix) 4
+          (= "Friday" day-of-week-prefix) 5)))
+
+(defn- what-is-collected-on-week [schedule week]
+  (remove nil? [:green-bin
+                (is-garbage-collection schedule week)
+                (is-recycling-collection schedule week)
+                (is-yard-waste-collection schedule week)
+                (is-christmas-tree-collection schedule week)]))
+
+(defn ymd-to-day-of-week [year month day]
+  (dt/day-of-week (dt/date-time year month day)))
 
 (defn what-is-collected [schedule year month day]
-  (cond
-   (and (= "Tuesday 2" schedule) (is-tuesday year month day))
-   (let [week (week-relative-to-august-1st year month day)]
-     (remove nil? [:green-bin
-                   (is-garbage-collection schedule week)
-                   (is-recycling-collection schedule week)
-                   (is-yard-waste-collection schedule week)
-                   (is-christmas-tree-collection schedule week)]))
-   :else []))
+  (let [day-of-week (schedule-to-day-of-week schedule)]
+    (if (= day-of-week (ymd-to-day-of-week year month day))
+      (what-is-collected-on-week schedule (week-relative-to-august-1st year month day))
+      [])))
 
 

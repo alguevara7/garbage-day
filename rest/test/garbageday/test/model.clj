@@ -14,9 +14,11 @@
   (is (= [:green-bin :garbage :yard-waste] (what-is-collected "Tuesday 2" 2012 5 1)))
   (is (= [:green-bin :garbage] (what-is-collected "Tuesday 2" 2012 2 7))))
 
-(deftest test-is-tuesday
-  (is (true? (is-tuesday 2012 1 17)))
-  (is (true? (is-tuesday 2011 12 6))))
+;add at least one test per collection calendar calendar!
+
+(deftest test-ymd-to-day-of-week
+  (is (= 2 (ymd-to-day-of-week 2012 1 17)))
+  (is (= 5 (ymd-to-day-of-week 2011 12 2))))
 
 (deftest test-week-relative-to-august-1st
   (is (= 1 (week-relative-to-august-1st 2011 8 1)))

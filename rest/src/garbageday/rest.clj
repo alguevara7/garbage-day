@@ -10,7 +10,7 @@
    :body (json/generate-string data)})
 
 (defroutes routes
-  (GET ["/api/1.0/lg=:longitude&lt=:latitude&y=:year&m=:month&d=:day",
+  (GET ["/whatiscollected/1.0/lg=:longitude&lt=:latitude&y=:year&m=:month&d=:day",
         :longitude #"\-{0,1}\d+\.\d+"
         :latitude #"\-{0,1}\d+\.\d+"
         :year #"\d+"
@@ -18,5 +18,7 @@
         :day #"\d+"]
        [longitude latitude year month day]
        (let [schedule (model/collection-schedule longitude latitude)]
-         (json-response {:day-of-week (model/schedule-to-day-of-week schedule)
-                         :what-is-collected (model/what-is-collected schedule (read-string year) (read-string month) (read-string day))}))))
+         (json-response {:what-is-collected
+                         (model/what-is-collected
+                          schedule
+                          (read-string year) (read-string month) (read-string day))}))))
