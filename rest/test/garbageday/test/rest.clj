@@ -31,3 +31,8 @@
     (is (= "{\"what-is-collected\":[\"green-bin\",\"recycling\"]}" (:body (request "/whatiscollected/1.0/lg=-1.1&lt=-2.2&y=2012&m=1&d=3" routes)))
         "correct body for properly formed request, with negative longitude and latitude"))
   )
+
+; add remaining calendar before adding the next collection day thing
+
+;/whatiscollected/1.0/lg=1.1&lt=2.2&y=2012&m=1&d=1&return-next-collection  --> :next-collection:[:y :m :d :what-is-collected]
+; today=[blah] next=[ymd and blah]

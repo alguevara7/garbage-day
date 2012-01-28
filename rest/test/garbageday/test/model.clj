@@ -12,9 +12,16 @@
   (is (= [:green-bin :garbage] (what-is-collected "Tuesday 2" 2011 12 27)))
   (is (= [:green-bin :garbage :christmas-tree] (what-is-collected "Tuesday 2" 2012 1 10)))
   (is (= [:green-bin :garbage :yard-waste] (what-is-collected "Tuesday 2" 2012 5 1)))
-  (is (= [:green-bin :garbage] (what-is-collected "Tuesday 2" 2012 2 7))))
+  (is (= [:green-bin :garbage] (what-is-collected "Tuesday 2" 2012 2 7)))
+  (is (= [] (what-is-collected "Wednesday 1" 2012 2 7)))
+  (is (= [:green-bin :garbage] (what-is-collected "Wednesday 1" 2012 2 1)))
+  (is (= [:green-bin :recycling] (what-is-collected "Wednesday 1" 2012 2 8)))
+  (is (= [:green-bin :garbage :christmas-tree] (what-is-collected "Wednesday 1" 2012 1 4)))
+  (is (= [:green-bin :garbage :christmas-tree] (what-is-collected "Wednesday 1" 2012 1 18)))
+  (is (= [:green-bin :garbage :yard-waste] (what-is-collected "Wednesday 1" 2011 12 7))))
 
 ;add at least one test per collection calendar calendar!
+;missing Wednesday 2, Thursday 1, Thursday 2, Wednesday 2, Friday 1, Friday 2
 
 (deftest test-ymd-to-day-of-week
   (is (= 2 (ymd-to-day-of-week 2012 1 17)))

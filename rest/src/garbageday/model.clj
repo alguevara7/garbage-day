@@ -24,20 +24,25 @@
   "1 is returned for the first week"
   (+ 1 (dt/in-weeks (dt/interval (dt/date-time 2011 8 1)  (dt/date-time year month day)) )))
 
-(defn- is-garbage-collection [schedule week]
+(defn- schedule-to-suffix [schedule]
+  (re-find #"[12]{1}" schedule))
+
+(defn- is-garbage-collection [schedule-suffix week]
   "returns :garbage if garbage is collected during week, nil otherwise"
-  (cond (some #{schedule} ["Tueday 1" "Tuesday 2"]) (if (even? week) :garbage)))
+  (cond (and (= "1" schedule-suffix) (odd? week)) :garbage
+        (and (= "2" schedule-suffix) (even? week)) :garbage))
 
-(defn- is-recycling-collection [schedule week]
-  (cond (some #{schedule} ["Tueday 1" "Tuesday 2"]) (if (odd? week) :recycling)))
+(defn- is-recycling-collection [schedule-suffix week]
+  (cond (and (= "1" schedule-suffix) (even? week)) :recycling
+        (and (= "2" schedule-suffix) (odd? week)) :recycling))
 
-(defn- is-yard-waste-collection [schedule week]
-  (cond (= schedule "Tuesday 1") (if (and (odd? week) (not (some #{week} (range 20 33)))) :yard-waste)
-        (= schedule "Tuesday 2") (if (and (even? week) (not (some #{week} (range 21 34)))) :yard-waste)))
+(defn- is-yard-waste-collection [schedule-suffix week]
+  (cond (and (= "1" schedule-suffix) (odd? week) (not (some #{week} (range 20 33)))) :yard-waste
+        (and (= "2" schedule-suffix) (even? week) (not (some #{week} (range 21 34)))) :yard-waste))
 
-(defn- is-christmas-tree-collection [schedule week]
-  (cond (= schedule "Tuesday 1") (if (some #{week} [23 25]) :christmas-tree)
-        (= schedule "Tuesday 2") (if (some #{week} [24 26]) :christmas-tree)))
+(defn- is-christmas-tree-collection [schedule-suffix week]
+  (cond (and (= "1" schedule-suffix) (some #{week} [23 25])) :christmas-tree
+        (and (= "2" schedule-suffix) (some #{week} [24 26])) :christmas-tree))
 
 (defn schedule-to-day-of-week [schedule]
   (let [day-of-week-prefix (re-find #"[a-zA-Z]*" schedule)]
@@ -47,11 +52,12 @@
           (= "Friday" day-of-week-prefix) 5)))
 
 (defn- what-is-collected-on-week [schedule week]
-  (remove nil? [:green-bin
-                (is-garbage-collection schedule week)
-                (is-recycling-collection schedule week)
-                (is-yard-waste-collection schedule week)
-                (is-christmas-tree-collection schedule week)]))
+  (let [schedule-suffix (schedule-to-suffix schedule)]
+    (remove nil? [:green-bin
+                  (is-garbage-collection schedule-suffix week)
+                  (is-recycling-collection schedule-suffix week)
+                  (is-yard-waste-collection schedule-suffix week)
+                  (is-christmas-tree-collection schedule-suffix week)])))
 
 (defn ymd-to-day-of-week [year month day]
   (dt/day-of-week (dt/date-time year month day)))
