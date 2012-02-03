@@ -1,0 +1,15 @@
+pom.xml
+*jar
+/lib/
+/classes/
+.lein-failures
+.lein-deps-sum
+*~
+.#*
+page.html
+*temp*
+.DS*
+target
+.settings
+.project
+.classpath
