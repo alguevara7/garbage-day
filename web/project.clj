@@ -9,6 +9,8 @@
                  [compojure "1.0.1"]
                  [hiccup "0.3.8"]
                  [clj-http "0.3.0"]
-                 []]
+                 [cheshire "2.0.4"]]
+  :dev-dependencies [[lein-ring "0.5.4"]]
+  :plugins [[lein-ring "0.5.4"]]
   :main garbageday.web.main
   :ring {:handler garbageday.web.main/application})

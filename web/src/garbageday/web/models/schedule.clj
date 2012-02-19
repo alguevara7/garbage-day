@@ -8,5 +8,9 @@
                                   "lg=" longitude "&lt=" latitude "&y=" year "&m=" month "&d=" day))]
     (json/parse-string (:body response))))
 
+; improve idiom to traverse json response
 (defn geo-locate [address]
-  {:longitude "79.410950" :latitude "43.667957"})
+  (let [response (client/get (url "http://maps.googleapis.com/maps/api/geocode/json" {:address address :sensor "false"}))
+        json-response (json/parse-string (:body response))
+        location (get (get (first (get json-response "results")) "geometry") "location")]
+    {:latitude (get location "lat") :longitude (get location "lng")}))

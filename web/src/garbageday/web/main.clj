@@ -1,5 +1,7 @@
 (ns garbageday.web.main
-  (:use [compojure.core :only [defroutes]])
+  (:use [compojure.core :only [defroutes]]
+        [ring.middleware.reload]
+        [ring.middleware.stacktrace])
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
             [ring.adapter.jetty :as ring]
@@ -14,8 +16,7 @@
 (def application (handler/site routes))
 
 (defn start [port]
-  (ring/run-jetty (var application) {:port (or port 8080)
-                                     :join? false}))
+  (ring/run-jetty (wrap-stacktrace-web (wrap-reload #'application)) {:port (or port 8080) :join? false}))
 
 (defn -main []
   (let [port (Integer/parseInt (System/getenv "PORT"))]
