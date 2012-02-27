@@ -3,7 +3,7 @@
         hiccup.core
         hiccup.page-helpers
         hiccup.form-helpers)
-  (:require [garbageday.web.models.schedule :as schedules]
+  (:require [garbageday.web.models.garbage-collection :as gc]
             [garbageday.web.models.location :as location]
             [garbageday.web.views.common :as common]
             [noir.validation :as vali]
@@ -16,7 +16,9 @@
 (defpartial search-fields [address]
   (vali/on-error :address error-text)
   (text-field {:placeholder "Address"} :address address)
-  (hidden-field {:placeholder "Date"} :date))
+  (hidden-field {:placeholder "Year"} :year)
+  (hidden-field {:placeholder "Month"} :month)
+  (hidden-field {:placeholder "Day"} :day))
 
 (defpartial render-item [item]
   [:li (str item)])
@@ -29,18 +31,24 @@
 
 (defpartial result-page [address schedule]
   (common/main-layout
-   (render-schedule schedule)
    (form-to [:post "/search"]
             (search-fields address)
-            (submit-button {:class "submit"} "Find"))))
+            (submit-button {:class "submit"} "Find"))
+   (render-schedule schedule)
+   ))
 
 ;; clicking on the "Garbage Day" button submits the form to this function
-(defpage [:post "/search"] {:keys [address date]}
+(defpage [:post "/search"] {:keys [address year month day]}
   (let [{:keys [longitude latitude]} (location/geo-locate address)]
-    (resp/redirect (url "/search" {:lg longitude :lt latitude :date date :address address}))))
+    (resp/redirect (url "/search" {:lg longitude :lt latitude :year year :month month :day day :address address}))))
 
 (defpage "/" []
-  (resp/redirect "/search/"))
+  (resp/redirect "/search"))
 
-(defpage "/search" {longitude :lg latitude :lt date :date address :address}
-  (result-page address {:collection-date date :items [:garbage :recycling-bin]}))
+(defpage "/search" {longitude :lg latitude :lt address :address
+                    year :year month :month day :day}
+  (result-page
+   address
+   (when address
+     (let [schedule (gc/collection-schedule longitude latitude)]
+       (gc/next-collection schedule (read-string year) (+ (read-string month) 1) (read-string day))))))

@@ -1,4 +1,12 @@
-(ns garbageday.web.models.location)
+(ns garbageday.web.models.location
+  (:use [hiccup.page-helpers :only [url]])
+  (:require [clj-http.client :as client]
+            [cheshire.core :as json]))
 
+; improve idiom to traverse json response
 (defn geo-locate [address]
-  {:longitude "1.0" :latitude "1.0"})
+  (let [response (client/get (url "http://maps.googleapis.com/maps/api/geocode/json" {:address address :sensor "false"}))
+        json-response (json/parse-string (:body response))
+        location (get (get (first (get json-response "results")) "geometry") "location")]
+        {:latitude (get location "lat") :longitude (get location "lng")}))
+

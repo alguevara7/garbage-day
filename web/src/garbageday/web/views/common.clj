@@ -9,8 +9,9 @@
 (def all-javascript-tags {:set-date-function
    (javascript-tag (str "function setDate() {"
                         "  var now = new Date();"
-                        "  document.getElementById('date')"
-                        "    .setAttribute('value', ''.concat(now.getFullYear(), now.getMonth(), now.getDate()));"
+                        "  document.getElementById('year').setAttribute('value', now.getFullYear());"
+                        "  document.getElementById('month').setAttribute('value', now.getMonth());"
+                        "  document.getElementById('day').setAttribute('value', now.getDate());"
                         "}"))})
 
 ;; helper partials
