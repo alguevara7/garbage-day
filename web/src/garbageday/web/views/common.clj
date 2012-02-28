@@ -4,7 +4,10 @@
        hiccup.page-helpers))
 
 ;; links and includes
-(def all-include-tags {:jquery (include-js "http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js")})
+(def all-include-tags {:jquery (include-js "http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js")
+                       :base-css (include-css "css/base.css")
+                       :skeleton-css (include-css "css/skeleton.css")
+                       :layout-css (include-css "css/layout.css")})
 
 (def all-javascript-tags {:set-date-function
    (javascript-tag (str "function setDate() {"
@@ -17,7 +20,15 @@
 ;; helper partials
 (defpartial build-head [include-tags javascript-tags]
   [:head
-   [:title "Garbage Day - Toronto"]
+   [:title "Next Garbage Pickup - Toronto"]
+   [:meta {:name "description" :content ""}]
+   [:meta {:charset "utf-8"}]
+   [:meta {:name "author" :content ""}]
+   [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1"}]
+   [:link {:type "shortcut icon" :href (resolve-uri "img/favicon.ico")}]
+   [:link {:type "apple-touch-icon" :href (resolve-uri "img/apple-touch-icon.png")}]
+   [:link {:type "apple-touch-icon" :sizes "72x72" :href (resolve-uri "img/apple-touch-icon-72x72.png")}]
+   [:link {:type "apple-touch-icon" :sizes "114x114" :href (resolve-uri "img/apple-touch-icon-114x114.png")}]
    (map #(get all-include-tags %) include-tags)
    (map #(get all-javascript-tags %) javascript-tags)])
 
@@ -25,10 +36,10 @@
 ;; layouts
 (defpartial main-layout [& content]
   (html5
-   (build-head [:jquery] [:set-date-function])
+   (build-head [:jquery :base-css :skeleton-css :layout-css] [:set-date-function])
    [:body {:onload "setDate()"}
-    [:div#wrapper
-     [:div.content
-      [:div#header
-       [:h1 (link-to "/search/" "Garbage Day - Toronto")]]
-      content]]]))
+    [:div.container
+     [:div {:class "sixteen columns"}
+      [:h1 {:class "remove-bottom" :style "margin-top: 40px"} "Next Garbage Pickup"]
+      [:h5 "Find the next garbage pickup day for an address in Toronto"]]
+     content]]))

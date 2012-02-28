@@ -2,7 +2,7 @@
   (:use clojure.contrib.java-utils)
   (:use [clojure.contrib.string :only [join]]
         [garbageday.web.date :only [date-range]]
-        [clj-time.core :only [date-time interval in-weeks plus weeks year month day]])
+        [clj-time.core :only [date-time interval in-weeks plus weeks year month day day-of-week]])
   (:import (java.util Date Timer Random)
            (org.geotools.data DataStoreFinder)
            (org.geotools.filter.text.cql2 CQL)))
@@ -60,12 +60,19 @@
                   (is-christmas-tree-collection schedule-suffix week)])))
 
 (defn ymd-to-day-of-week [year month day]
-  (dt/day-of-week (dt/date-time year month day)))
+  (day-of-week (date-time year month day)))
+
+(defn what-is-collected [schedule year month day]
+  (let [day-of-week (schedule-to-day-of-week schedule)]
+    (if (= day-of-week (ymd-to-day-of-week year month day))
+      (what-is-collected-on-week schedule (week-relative-to-august-1st year month day))
+      [])))
 
 (defn next-collection [schedule year1 month1 day1]
   (first (drop-while (fn [{items :items}] (nil? (seq items)))
                      (map (fn [dt]
-                            {:collection-date dt
+                            {:schedule schedule
+                             :date dt
                              :items (what-is-collected schedule
                                                        (year dt)
                                                        (month dt)
@@ -73,10 +80,6 @@
                           (date-range (date-time year1 month1 day1)
                                (plus (date-time year1 month1 day1) (weeks 1)))))))
 
-(defn what-is-collected [schedule year month day]
-  (let [day-of-week (schedule-to-day-of-week schedule)]
-    (if (= day-of-week (ymd-to-day-of-week year month day))
-      (what-is-collected-on-week schedule (week-relative-to-august-1st year month day))
-      [])))
+
 
 
