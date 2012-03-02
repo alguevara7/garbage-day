@@ -1,7 +1,8 @@
 (ns garbageday.web.models.location
   (:use [hiccup.page-helpers :only [url]])
   (:require [clj-http.client :as client]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [noir.validation :as vali]))
 
 ; improve idiom to traverse json response
 (defn geo-locate [address]

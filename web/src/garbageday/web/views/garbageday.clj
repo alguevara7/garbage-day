@@ -22,12 +22,12 @@
   (hidden-field {:placeholder "Day"} :day))
 
 (defpartial render-item [item]
-  (str item))
+  (image (str "img/" (name item) ".png"))) 
 
 (defpartial render-collection-info [{:keys [date items schedule] :as collection-info}]
   (when (seq collection-info)
     [:div
-     [:h6 (dtfmt/unparse (dtfmt/formatter "EEEE, MMMMM d") date)]
+     [:h5 (dtfmt/unparse (dtfmt/formatter "EEEE, MMMMM d") date)]
      [:div (map render-item items)]
      (link-to (str "http://www.toronto.ca/garbage/single/calendars/" (string/lower-case (string/replace schedule " " "_")) ".pdf")  "calendar")]))
 
@@ -56,3 +56,5 @@
    (when address
      (let [schedule (gc/collection-schedule longitude latitude)]
        (gc/next-collection schedule (read-string year) (+ (read-string month) 1) (read-string day))))))
+
+;;(do (vali/rule (vali/has-value? address) [:address "There must be an address"]) (not (vali/errors? :address)))

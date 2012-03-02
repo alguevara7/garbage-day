@@ -40,6 +40,6 @@
    [:body {:onload "setDate()"}
     [:div.container
      [:div {:class "sixteen columns"}
-      [:h1 {:class "remove-bottom" :style "margin-top: 40px"} "Next Garbage Pickup"]
-      [:h5 "Find the next garbage pickup day for an address in Toronto"]]
+      [:h3 {:class "remove-bottom" :style "margin-top: 40px"} "Next Garbage Pickup"]
+      [:h6 "Find the next garbage pickup day for an address in Toronto"]]
      content]]))
