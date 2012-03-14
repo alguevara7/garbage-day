@@ -44,17 +44,15 @@
 ;;
 ;; clicking on the "Garbage Day" button submits the form to this function
 (defpage [:post "/search"] {:keys [address year month day]}
-  (let [{:keys [longitude latitude]} (location/geo-locate address)]
-    (resp/redirect (url "/search" {:lg longitude :lt latitude :year year :month month :day day :address address}))))
+  (let [collection-info (gc/next-collection-at-address address year month day)]
+    (cache/put address year month day collection-info)
+    (resp/redirect (url "/search" {:address address :year year :month month :day day}))))
 
 (defpage "/" []
   (resp/redirect "/search"))
 
-(defpage "/search" {longitude :lg latitude :lt address :address
-                    year :year month :month day :day}
-  (result-page address
-   (when address
-     (let [schedule (gc/collection-schedule longitude latitude)]
-       (gc/next-collection schedule (read-string year) (+ (read-string month) 1) (read-string day))))))
+(defpage "/search" {address :address year :year month :month day :day}
+  (let [collection-info (cache/get address year month day)]
+    (result-page address collection-info)))
 
 ;;(do (vali/rule (vali/has-value? address) [:address "There must be an address"]) (not (vali/errors? :address)))

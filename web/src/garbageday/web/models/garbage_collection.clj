@@ -3,6 +3,7 @@
   (:use [clojure.contrib.string :only [join]]
         [garbageday.web.date :only [date-range]]
         [clj-time.core :only [date-time interval in-weeks plus weeks year month day day-of-week]])
+  (:require [garbageday.web.models.location :as location])
   (:import (java.util Date Timer Random)
            (org.geotools.data DataStoreFinder)
            (org.geotools.filter.text.cql2 CQL)))
@@ -80,6 +81,8 @@
                           (date-range (date-time year1 month1 day1)
                                (plus (date-time year1 month1 day1) (weeks 1)))))))
 
-
-
-
+(defn next-collection-at-address [address year month day]
+  (when address
+    (let [{:keys [longitude latitude]} (location/geo-locate address)
+          schedule (collection-schedule longitude latitude)]
+       (next-collection schedule (read-string year) (+ (read-string month) 1) (read-string day)))))

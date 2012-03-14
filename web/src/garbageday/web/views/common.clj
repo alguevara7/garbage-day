@@ -21,9 +21,9 @@
 (defpartial build-head [include-tags javascript-tags]
   [:head
    [:title "Next Garbage Pickup - Toronto"]
-   [:meta {:name "description" :content ""}]
+   [:meta {:name "description" :content "Next Garbage Pickup Day in Toronto"}]
    [:meta {:charset "utf-8"}]
-   [:meta {:name "author" :content ""}]
+   [:meta {:name "author" :content "alexguev@gmail.com"}]
    [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1"}]
    [:link {:type "shortcut icon" :href (resolve-uri "img/favicon.ico")}]
    [:link {:type "apple-touch-icon" :href (resolve-uri "img/apple-touch-icon.png")}]
@@ -40,6 +40,6 @@
    [:body {:onload "setDate()"}
     [:div.container
      [:div {:class "sixteen columns"}
-      [:h3 {:class "remove-bottom" :style "margin-top: 40px"} "Next Garbage Pickup"]
+      [:h3 {:class "remove-bottom" :style "margin-top: 0px"} "Next Garbage Pickup"]
       [:h6 "Find the next garbage pickup day for an address in Toronto"]]
      content]]))
