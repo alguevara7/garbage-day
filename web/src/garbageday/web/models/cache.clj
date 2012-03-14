@@ -1,6 +1,6 @@
 (ns garbageday.web.models.cache
   (:use clojure.core)
-  (:require [clojure.string :as str])
+  (:require [clojure.string :as s])
   (:import (net.spy.memcached.auth AuthDescriptor PlainCallbackHandler)
            (net.spy.memcached ConnectionFactoryBuilder MemcachedClient AddrUtil)))
 
@@ -14,14 +14,18 @@
     (MemcachedClient. (.build builder) (AddrUtil/getAddresses hosts))))
 
 (defn- to-key [address year month day]
-  (str (str/replace address " " "_") year month day))
+  (str (s/replace address " " "_") year month day))
 
 (defn get [address year month day]
-  (try (read-string (.get (find-client) (to-key address year month day)))
-       (catch Exception e nil)))
+  (try (read-string (.get (find-client) (to-key address year month day))) (catch Exception e nil)))
+
+; add print-dup support for org.joda.time.DateTime
+(defmethod print-dup org.joda.time.ReadableInstant [o w]
+  (print-ctor o (fn [o w] (print-dup (.getMillis  o) w)) w))
 
 (defn put [address year month day collection-info]
-  (.set (find-client) (to-key address year month day) 0 (str (binding [*print-dup* true] (prn-str collection-info)))))
+  (let [future (.set (find-client) (to-key address year month day) 0 (str (binding [*print-dup* true] (prn-str collection-info))))]
+    (.get future))) ; wait for future
 
 (defmacro ^{:private true} assert-args [fnname & pairs]
   `(do (when-not ~(first pairs)
@@ -29,7 +33,8 @@
        ~(let [more (nnext pairs)]
           (when more (list* `assert-args fnname more)))))
 
-(defmacro with-open1
+; extend this withopen to receive the name of the method that should be called to release resources
+(defmacro ^{:private true} with-open
   "bindings => [name init ...]
 
   Evaluates body in a try expression with names bound to the values
@@ -57,7 +62,7 @@
 (defn with-memcached*
   "Evaluates func in the context of a new client connection to a memcached then closes the connection."
   [spec func]
-  (with-open1 [^MemcachedClient client (get-client spec)]
+  (with-open [^MemcachedClient client (get-client spec)]
     (binding [*cache* (assoc *cache* :client client)]
       (func))))
 

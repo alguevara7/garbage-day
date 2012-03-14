@@ -1,5 +1,6 @@
 (ns garbageday.web.models.garbage-collection
   (:use clojure.contrib.java-utils)
+  (:use clj-time.coerce)
   (:use [clojure.contrib.string :only [join]]
         [garbageday.web.date :only [date-range]]
         [clj-time.core :only [date-time interval in-weeks plus weeks year month day day-of-week]])

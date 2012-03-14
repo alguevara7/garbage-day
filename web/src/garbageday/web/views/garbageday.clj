@@ -2,14 +2,16 @@
   (:use noir.core
         hiccup.core
         hiccup.page-helpers
-        hiccup.form-helpers)
+        hiccup.form-helpers
+        clj-time.coerce)
   (:require [garbageday.web.models.garbage-collection :as gc]
             [garbageday.web.models.location :as location]
             [garbageday.web.views.common :as common]
             [noir.validation :as vali]
             [clojure.string :as string]
             [noir.response :as resp]
-            [clj-time.format :as dtfmt]))
+            [clj-time.format :as dtfmt]
+            [garbageday.web.models.cache :as cache]))
 
 (defpartial error-text [errors]
   [:p (string/join "<br/>" errors)])
@@ -44,15 +46,19 @@
 ;;
 ;; clicking on the "Garbage Day" button submits the form to this function
 (defpage [:post "/search"] {:keys [address year month day]}
-  (let [collection-info (gc/next-collection-at-address address year month day)]
-    (cache/put address year month day collection-info)
-    (resp/redirect (url "/search" {:address address :year year :month month :day day}))))
+  (cache/with-memcached {:hosts "localhost:11211" :username "username" :password "password"}
+    (let [collection-info (or (cache/get address year month day)
+                              (gc/next-collection-at-address address year month day))]
+      (cache/put address year month day collection-info)
+      (resp/redirect (url "/search" {:address address :year year :month month :day day}))))
+  )
 
 (defpage "/" []
   (resp/redirect "/search"))
 
 (defpage "/search" {address :address year :year month :month day :day}
-  (let [collection-info (cache/get address year month day)]
-    (result-page address collection-info)))
+  (cache/with-memcached {:hosts "localhost:11211" :username "username" :password "password"}
+    (let [collection-info (cache/get address year month day)]
+      (result-page address collection-info))))
 
 ;;(do (vali/rule (vali/has-value? address) [:address "There must be an address"]) (not (vali/errors? :address)))
