@@ -57,7 +57,9 @@
   (resp/redirect "/search"))
 
 (defpage "/search" {address :address year :year month :month day :day}
-  (cache/with-memcached {:hosts "localhost:11211" :username "username" :password "password"}
+  (cache/with-memcached {:hosts (str (get (System/getenv) "MEMCACHE_SERVERS" "localhost") ":11211")
+                         :username (get (System/getenv) "MEMCACHE_USERNAME" "username")
+                         :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")}
     (let [collection-info (cache/get address year month day)]
       (result-page address collection-info))))
 
