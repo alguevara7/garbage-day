@@ -1,1 +1,1 @@
-web: lein run -m garbageday.web.main
+web: lein run -m garbageday.web.server
