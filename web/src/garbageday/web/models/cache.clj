@@ -2,7 +2,9 @@
   (:use clojure.core)
   (:require [clojure.string :as s])
   (:import (net.spy.memcached.auth AuthDescriptor PlainCallbackHandler)
-           (net.spy.memcached ConnectionFactoryBuilder MemcachedClient AddrUtil)))
+           (net.spy.memcached ConnectionFactoryBuilder MemcachedClient AddrUtil ConnectionFactoryBuilder$Protocol)))
+
+;;fix with-open (rename to ...)
 
 (def ^{:dynamic true} *cache* {:client nil})
 
@@ -10,13 +12,13 @@
 
 (defn get-client [{:keys [hosts username password]}]
   (let [auth-desc (AuthDescriptor. (into-array String ["PLAIN"]) (PlainCallbackHandler. username password))
-        builder (doto (ConnectionFactoryBuilder.) (.setAuthDescriptor auth-desc))]
+        builder (doto (ConnectionFactoryBuilder.) (.setAuthDescriptor auth-desc) (.setProtocol ConnectionFactoryBuilder$Protocol/BINARY))]
     (MemcachedClient. (.build builder) (AddrUtil/getAddresses hosts))))
 
 (defn- to-key [address year month day]
   (str (s/replace address " " "_") year month day))
 
-(defn get [address year month day]
+(defn get-value [address year month day]
   (try (read-string (.get (find-client) (to-key address year month day))) (catch Exception e nil)))
 
 ; add print-dup support for org.joda.time.DateTime
@@ -34,7 +36,7 @@
           (when more (list* `assert-args fnname more)))))
 
 ; extend this withopen to receive the name of the method that should be called to release resources
-(defmacro ^{:private true} with-open
+(defmacro ^{:private true} with-open1
   "bindings => [name init ...]
 
   Evaluates body in a try expression with names bound to the values
@@ -62,7 +64,7 @@
 (defn with-memcached*
   "Evaluates func in the context of a new client connection to a memcached then closes the connection."
   [spec func]
-  (with-open [^MemcachedClient client (get-client spec)]
+  (with-open1 [^MemcachedClient client (get-client spec)]
     (binding [*cache* (assoc *cache* :client client)]
       (func))))
 

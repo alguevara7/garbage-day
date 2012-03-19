@@ -46,8 +46,10 @@
 ;;
 ;; clicking on the "Garbage Day" button submits the form to this function
 (defpage [:post "/search"] {:keys [address year month day]}
-  (cache/with-memcached {:hosts "localhost:11211" :username "username" :password "password"}
-    (let [collection-info (or (cache/get address year month day)
+  (cache/with-memcached {:hosts (str (get (System/getenv) "MEMCACHE_SERVERS" "localhost") ":11211")
+                         :username (get (System/getenv) "MEMCACHE_USERNAME" "username")
+                         :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")}
+    (let [collection-info (or (cache/get-value address year month day)
                               (gc/next-collection-at-address address year month day))]
       (cache/put address year month day collection-info)
       (resp/redirect (url "/search" {:address address :year year :month month :day day}))))
@@ -60,7 +62,7 @@
   (cache/with-memcached {:hosts (str (get (System/getenv) "MEMCACHE_SERVERS" "localhost") ":11211")
                          :username (get (System/getenv) "MEMCACHE_USERNAME" "username")
                          :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")}
-    (let [collection-info (cache/get address year month day)]
+    (let [collection-info (cache/get-value address year month day)]
       (result-page address collection-info))))
 
 ;;(do (vali/rule (vali/has-value? address) [:address "There must be an address"]) (not (vali/errors? :address)))
