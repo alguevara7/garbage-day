@@ -20,7 +20,7 @@
 ;; helper partials
 (defpartial build-head [include-tags javascript-tags]
   [:head
-   [:title "Next Garbage Pickup - Toronto"]
+   [:title "Next Garbage Pickup Day - Toronto"]
    [:meta {:name "description" :content "Next Garbage Pickup Day in Toronto"}]
    [:meta {:charset "utf-8"}]
    [:meta {:name "author" :content "alexguev@gmail.com"}]
@@ -40,6 +40,6 @@
    [:body {:onload "setDate()"}
     [:div.container
      [:div {:class "sixteen columns"}
-      [:h3 {:class "remove-bottom" :style "margin-top: 0px"} "Next Garbage Pickup"]
+      [:h3 {:class "remove-bottom" :style "margin-top: 0px"} (link-to "./" "Next Garbage Pickup Day")]
       [:h6 "Find the next garbage pickup day for an address in Toronto"]]
      content]]))
