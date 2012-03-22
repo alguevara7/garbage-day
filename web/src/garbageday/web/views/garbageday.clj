@@ -3,7 +3,8 @@
         hiccup.core
         hiccup.page-helpers
         hiccup.form-helpers
-        clj-time.coerce)
+        clj-time.coerce
+        [clojure.tools.logging :only [info]])
   (:require [garbageday.web.models.garbage-collection :as gc]
             [garbageday.web.models.location :as location]
             [garbageday.web.views.common :as common]
@@ -12,6 +13,10 @@
             [noir.response :as resp]
             [clj-time.format :as dtfmt]
             [garbageday.web.models.cache :as cache]))
+
+(def memcached-spec {:hosts (str (get (System/getenv) "MEMCACHE_SERVERS" "localhost") ":11211")
+                     :username (get (System/getenv) "MEMCACHE_USERNAME" "username")
+                     :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")})
 
 (defpartial error-text [errors]
   [:p (string/join "<br/>" errors)])
@@ -46,9 +51,8 @@
 ;;
 ;; clicking on the "Garbage Day" button submits the form to this function
 (defpage [:post "/search"] {:keys [address year month day]}
-  (cache/with-memcached {:hosts (str (get (System/getenv) "MEMCACHE_SERVERS" "localhost") ":11211")
-                         :username (get (System/getenv) "MEMCACHE_USERNAME" "username")
-                         :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")}
+  ;(info (str "POST>" year "/" month "/" day " - " address))
+  (cache/with-memcached memcached-spec
     (let [collection-info (or (cache/get-value address year month day)
                               (gc/next-collection-at-address address year month day))]
       (cache/put address year month day collection-info)
@@ -59,9 +63,8 @@
   (resp/redirect "/search"))
 
 (defpage "/search" {address :address year :year month :month day :day}
-  (cache/with-memcached {:hosts (str (get (System/getenv) "MEMCACHE_SERVERS" "localhost") ":11211")
-                         :username (get (System/getenv) "MEMCACHE_USERNAME" "username")
-                         :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")}
+  ;(info (str "GET>" year "/" month "/" day " - " address))
+  (cache/with-memcached memcached-spec
     (let [collection-info (cache/get-value address year month day)]
       (result-page address collection-info))))
 

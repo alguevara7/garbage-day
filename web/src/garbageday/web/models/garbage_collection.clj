@@ -1,7 +1,7 @@
 (ns garbageday.web.models.garbage-collection
   (:use clojure.contrib.java-utils)
   (:use clj-time.coerce)
-  (:use [clojure.contrib.string :only [join]]
+  (:use [clojure.contrib.string :only [join upper-case]]
         [garbageday.web.date :only [date-range]]
         [clj-time.core :only [date-time interval in-weeks plus weeks year month day day-of-week]])
   (:require [garbageday.web.models.location :as location])
@@ -82,8 +82,13 @@
                           (date-range (date-time year1 month1 day1)
                                (plus (date-time year1 month1 day1) (weeks 1)))))))
 
+(defn add-city-suffix [address]
+  (if-not (re-find #".*,\s*\w+\s*$" (upper-case address))
+    (str address ", Toronto" )
+    address))
+
 (defn next-collection-at-address [address year month day]
   (when address
-    (let [{:keys [longitude latitude]} (location/geo-locate address)
+    (let [{:keys [longitude latitude]} (location/geo-locate (add-city-suffix address))
           schedule (collection-schedule longitude latitude)]
        (next-collection schedule (read-string year) (+ (read-string month) 1) (read-string day)))))

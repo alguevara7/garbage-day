@@ -12,7 +12,8 @@
 
 (defn get-client [{:keys [hosts username password]}]
   (let [auth-desc (AuthDescriptor. (into-array String ["PLAIN"]) (PlainCallbackHandler. username password))
-        builder (doto (ConnectionFactoryBuilder.) (.setAuthDescriptor auth-desc) (.setProtocol ConnectionFactoryBuilder$Protocol/BINARY))]
+        builder (doto (ConnectionFactoryBuilder.) (.setAuthDescriptor auth-desc) (.setProtocol ConnectionFactoryBuilder$Protocol/BINARY)
+                      )]
     (MemcachedClient. (.build builder) (AddrUtil/getAddresses hosts))))
 
 (defn- to-key [address year month day]

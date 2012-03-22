@@ -4,6 +4,7 @@
   :description ""
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.clojure/java.jdbc "0.1.3"]
+                 [org.clojure/tools.logging "0.2.3"]
                  [clj-time "0.3.7"]
                  [noir "1.3.0-alpha10"]
                  [org.geotools/gt2-shapefile "2.4.5"]
