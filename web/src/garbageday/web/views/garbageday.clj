@@ -56,13 +56,10 @@
     (let [collection-info (or (cache/get-value address year month day)
                               (gc/next-collection-at-address address year month day))]
       (cache/put address year month day collection-info)
-      (resp/redirect (url "/search" {:address address :year year :month month :day day}))))
+      (resp/redirect (url "/" {:address address :year year :month month :day day}))))
   )
 
-(defpage "/" []
-  (resp/redirect "/search"))
-
-(defpage "/search" {address :address year :year month :month day :day}
+(defpage "/" {address :address year :year month :month day :day}
   ;(info (str "GET>" year "/" month "/" day " - " address))
   (cache/with-memcached memcached-spec
     (let [collection-info (cache/get-value address year month day)]
