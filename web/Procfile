@@ -1,1 +1,1 @@
-web: lein run -m garbageday.web.server
+web: lein run -m garbageday.web.server :prod 
