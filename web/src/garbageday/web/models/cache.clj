@@ -1,6 +1,5 @@
 (ns garbageday.web.models.cache
-  (:use clojure.core
-        [noir.options :only [dev-mode?]])
+  (:use clojure.core)
   (:require [clojure.string :as s])
   (:import (net.spy.memcached.auth AuthDescriptor PlainCallbackHandler)
            (net.spy.memcached ConnectionFactoryBuilder MemcachedClient AddrUtil ConnectionFactoryBuilder$Protocol)))
@@ -11,10 +10,10 @@
 
 (defn find-client "Returns the current memcached client (or nil if there is none)"  [] (:client *cache*))
 
-(defn get-client [{:keys [hosts username password]}]
+(defn get-client [{:keys [hosts username password prod-mode]}]
   (let [auth-desc (AuthDescriptor. (into-array String ["PLAIN"]) (PlainCallbackHandler. username password))
         builder (doto (ConnectionFactoryBuilder.) (.setAuthDescriptor auth-desc))
-        secure-builder (if-not (dev-mode?)
+        secure-builder (if prod-mode
                          (doto builder (.setProtocol ConnectionFactoryBuilder$Protocol/BINARY))
                          builder)]
     (MemcachedClient. (.build secure-builder) (AddrUtil/getAddresses hosts))))

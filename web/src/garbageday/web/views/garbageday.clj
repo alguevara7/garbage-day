@@ -4,7 +4,8 @@
         hiccup.page-helpers
         hiccup.form-helpers
         clj-time.coerce
-        [clojure.tools.logging :only [info]])
+        [clojure.tools.logging :only [info]]
+        [noir.options :only [dev-mode?]])
   (:require [garbageday.web.models.garbage-collection :as gc]
             [garbageday.web.models.location :as location]
             [garbageday.web.views.common :as common]
@@ -16,7 +17,8 @@
 
 (def memcached-spec {:hosts (str (get (System/getenv) "MEMCACHE_SERVERS" "localhost") ":11211")
                      :username (get (System/getenv) "MEMCACHE_USERNAME" "username")
-                     :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")})
+                     :password (get (System/getenv) "MEMCACHE_PASSWORD" "password")
+                     :prod-mode (not (dev-mode?))})
 
 (defpartial error-text [errors]
   [:p (string/join "<br/>" errors)])
@@ -59,8 +61,11 @@
       (resp/redirect (url "/" {:address address :year year :month month :day day}))))
   )
 
+(defn log-info [message]
+  (println *out*))
+
 (defpage "/" {address :address year :year month :month day :day}
-  ;(info (str "GET>" year "/" month "/" day " - " address))
+  (log-info (str "GET>" year "/" month "/" day " - " address))
   (cache/with-memcached memcached-spec
     (let [collection-info (cache/get-value address year month day)]
       (result-page address collection-info))))

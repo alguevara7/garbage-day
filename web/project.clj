@@ -12,6 +12,7 @@
                  [clj-http "0.3.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
 		 [spy/spymemcached "2.8.0" :exclusions [com.sun.jmx/jmxri com.sun.jdmk/jmxtools javax.jms/jms]]]
+  :plugins [[lein-swank "1.4.4"]]
   :main garbageday.web.server
   :repositories {"spy repository" "http://files.couchbase.com/maven2"
                  "geotools" "http://download.osgeo.org/webdav/geotools/"})
